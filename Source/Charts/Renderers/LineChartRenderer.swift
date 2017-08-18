@@ -648,6 +648,8 @@ open class LineChartRenderer: LineRadarRenderer
             for j in stride(from: _xBounds.min, through: _xBounds.range + _xBounds.min, by: 1)
             {
                 guard let e = dataSet.entryForIndex(j) else { break }
+                
+                if (e.icon != nil) { continue }
 
                 pt.x = CGFloat(e.x)
                 pt.y = CGFloat(e.y * phaseY)
