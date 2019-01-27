@@ -264,6 +264,17 @@ open class HorizontalBarChartRenderer: BarChartRenderer
             context.addPath(path.cgPath)
             context.clip()
             
+            if dataSet.roundBottomBar {
+                let bottomRectInBar = findMostRightRectInBar(barRects: buffer.rects,
+                                                             firstIndexInBar: firstIndexInBar,
+                                                             lastIndexInBar: lastIndexInBar)
+                
+                let bottomPath = createBarPath(for: bottomRectInBar, roundedCorners: dataSet.roundedCorners)
+                
+                context.addPath(bottomPath.cgPath)
+                context.clip()
+            }
+            
             for index in firstIndexInBar...lastIndexInBar {
                 
                 let barRect = buffer.rects[index]
@@ -681,5 +692,14 @@ open class HorizontalBarChartRenderer: BarChartRenderer
         leftRectInBar.size.width = width
 
         return leftRectInBar
+    }
+    
+    private func findMostRightRectInBar(barRects: [CGRect], firstIndexInBar: Int, lastIndexInBar: Int) -> CGRect {
+        var rightRectInBar = barRects[firstIndexInBar]
+        if barRects[lastIndexInBar].origin.x > rightRectInBar.origin.x {
+            rightRectInBar = barRects[lastIndexInBar]
+        }
+        
+        return rightRectInBar
     }
 }

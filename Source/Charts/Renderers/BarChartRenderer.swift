@@ -427,6 +427,17 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
             context.addPath(path.cgPath)
             context.clip()
             
+            if dataSet.roundBottomBar {
+                let bottomRectInBar = findBottomRectInBar(barRects: buffer.rects,
+                                                          firstIndexInBar: firstIndexInBar,
+                                                          lastIndexInBar: lastIndexInBar)
+
+                let bottomPath = createBarPath(for: bottomRectInBar, roundedCorners: dataSet.roundedCorners)
+                
+                context.addPath(bottomPath.cgPath)
+                context.clip()
+            }
+            
             for index in firstIndexInBar...lastIndexInBar {
                 
                 let barRect = buffer.rects[index]
@@ -949,6 +960,15 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
         topRectInBar.size.height = height
         
         return topRectInBar
+    }
+    
+    private func findBottomRectInBar(barRects: [CGRect], firstIndexInBar: Int, lastIndexInBar: Int) -> CGRect {
+        var bottomRectInBar = barRects[firstIndexInBar]
+        if barRects[lastIndexInBar].origin.y > bottomRectInBar.origin.y {
+            bottomRectInBar = barRects[lastIndexInBar]
+        }
+        
+        return bottomRectInBar
     }
 
     /// Creates path for bar in rect with rounded corners
