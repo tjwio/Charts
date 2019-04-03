@@ -13,10 +13,6 @@
 import Foundation
 import CoreGraphics
 
-#if !os(OSX)
-    import UIKit
-#endif
-
 @objc
 public protocol ChartViewDelegate
 {
@@ -38,6 +34,9 @@ public protocol ChartViewDelegate
     
     // Callbacks when the chart is moved / translated via drag gesture.
     @objc optional func chartTranslated(_ chartView: ChartViewBase, dX: CGFloat, dY: CGFloat)
+
+    // Callbacks when Animator stops animating
+    @objc optional func chartView(_ chartView: ChartViewBase, animatorDidStop animator: Animator)
 }
 
 open class ChartViewBase: NSUIView, ChartDataProvider, AnimatorDelegate
@@ -171,7 +170,7 @@ open class ChartViewBase: NSUIView, ChartDataProvider, AnimatorDelegate
     internal func initialize()
     {
         #if os(iOS)
-            self.backgroundColor = NSUIColor.clear
+        self.backgroundColor = NSUIColor.clear
         #endif
 
         _animator = Animator()
@@ -406,7 +405,7 @@ open class ChartViewBase: NSUIView, ChartDataProvider, AnimatorDelegate
     /// - Returns: `true` if there are values to highlight, `false` ifthere are no values to highlight.
     @objc open func valuesToHighlight() -> Bool
     {
-        return _indicesToHighlight.count > 0
+        return !_indicesToHighlight.isEmpty
     }
 
     /// Highlights the values at the given indices in the given DataSets. Provide
@@ -996,7 +995,7 @@ open class ChartViewBase: NSUIView, ChartDataProvider, AnimatorDelegate
     
     open func animatorStopped(_ chartAnimator: Animator)
     {
-        
+        delegate?.chartView?(self, animatorDidStop: chartAnimator)
     }
     
     // MARK: - Touches
